@@ -1,5 +1,5 @@
 # Wir nutzen das offizielle fhempy Image als Basis
-FROM dominikkarall/fhempy:latest
+FROM fhempy/fhempy:latest
 
 # Arbeitsverzeichnis setzen
 WORKDIR /app
