@@ -1,0 +1,29 @@
+name: Remote Build from Original
+on:
+  workflow_dispatch: # Manueller Start-Button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkt das ORIGINAL Repo aus (nicht deines!)
+      - name: Checkout Original
+        uses: actions/checkout@v4
+        with:
+          repository: fhem/fhempy-docker
+          ref: master
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Baut das Image basierend auf den Original-Dateien
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.actor }}/fhempy-custom:latest
