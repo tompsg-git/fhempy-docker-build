@@ -1,21 +1,26 @@
-# Wir nutzen ein offizielles Python-Image als sichere Basis
 FROM python:3.9-slim-bullseye
 
-# System-Abhängigkeiten installieren (wichtig für Tuya und Python-Builds)
+# System-Abhängigkeiten UND nützliche Tools installieren
 RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
     libffi-dev \
     libssl-dev \
     curl \
+    # --- DEINE TOOLS ---
+    procps \
+    iputils-ping \
+    vim-tiny \
+    net-tools \
+    # -------------------
     && rm -rf /var/lib/apt/lists/*
 
-# Arbeitsverzeichnis
 WORKDIR /app
 
-# Installiere fhempy und die Tuya-Abhängigkeiten direkt
+# Installiere fhempy und Tuya-Libraries
 RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir fhempy tuya-iot-py-sdk
+RUN pip install --no-cache-dir fhempy tuya-iot-py-sdk tinytuya
 
-# Startbefehl für fhempy
-CMD ["fhempy"]
+EXPOSE 15733
+
+CMD ["fhempy", "-p", "15733"]
