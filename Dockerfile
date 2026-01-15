@@ -1,13 +1,21 @@
-# Wir nutzen das offizielle fhempy Image als Basis
-FROM fhempy/fhempy:latest
+# Wir nutzen ein offizielles Python-Image als sichere Basis
+FROM python:3.9-slim-bullseye
 
-# Arbeitsverzeichnis setzen
+# System-Abhängigkeiten installieren (wichtig für Tuya und Python-Builds)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    libffi-dev \
+    libssl-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Arbeitsverzeichnis
 WORKDIR /app
 
-# Kopiere deine requirements.txt ins Image
-COPY requirements.txt .
+# Installiere fhempy und die Tuya-Abhängigkeiten direkt
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir fhempy tuya-iot-py-sdk
 
-# Installiere die zusätzlichen Tuya-Abhängigkeiten
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Der Rest bleibt wie im Original
+# Startbefehl für fhempy
+CMD ["fhempy"]
